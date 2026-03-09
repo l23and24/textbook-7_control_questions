@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Навігація за параграфами</title>
+    <style>
+        :root {
+            --primary-color: #2da44e; /* Зелений */
+            --bg-color: #f6f8fa;
+            --text-color: #24292f;
+            --card-bg: #ffffff;
+            --border-color: #d0d7de;
+            --hover-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
+            --header-bg: #1a2a3a; /* Темно-синій замість чорного */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            border-bottom: 4px solid var(--primary-color);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        header p {
+            opacity: 0.85;
+            margin-top: 0.5rem;
+            font-weight: 300;
+        }
+
+        main {
+            flex: 1;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--hover-shadow);
+            border-color: var(--primary-color);
+        }
+
+        .card h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+            color: #1a2a3a; /* Синій заголовок для карток */
+            transition: color 0.2s;
+        }
+
+        .card:hover h2 {
+            color: var(--primary-color);
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #57606a;
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 20px;
+            background-color: #dafbe1;
+            color: #1a7f37;
+            align-self: flex-start;
+            border: 1px solid rgba(26, 127, 55, 0.1);
+        }
+
+        footer {
+            background-color: #ffffff;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.85rem;
+            color: #6e7781;
+        }
+
+        @media (max-width: 600px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Зміст репозиторію</h1>
+        <p>Навчальні матеріали та параграфи курсу</p>
+    </header>
+
+    <main>
+        <div class="grid-container" id="links-container">
+            <!-- Ручні посилання -->
+            <a href="paragraph26.html" class="card">
+                <div>
+                    <h2>Параграф 26</h2>
+                    <p>Опис теми або короткий вступ до матеріалу.</p>
+                </div>
+                <span class="status-badge">Переглянути</span>
+            </a>
+
+            <a href="paragraph27.html" class="card">
+                <div>
+                    <h2>Параграф 27</h2>
+                    <p>Докладна інформація та практичні завдання.</p>
+                </div>
+                <span class="status-badge">Переглянути</span>
+            </a>
+
+            <a href="paragraph28.html" class="card">
+                <div>
+                    <h2>Параграф 28</h2>
+                    <p>Аналіз та ключові поняття теми.</p>
+                </div>
+                <span class="status-badge">Переглянути</span>
+            </a>
+
+            <!-- Автоматична генерація решти списку -->
+            <script>
+                const container = document.getElementById('links-container');
+                for (let i = 29; i <= 36; i++) {
+                    const card = document.createElement('a');
+                    card.href = `paragraph${i}.html`;
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div>
+                            <h2>Параграф ${i}</h2>
+                            <p>Матеріали до теми №${i}. Натисніть для переходу до файлу.</p>
+                        </div>
+                        <span class="status-badge">Переглянути</span>
+                    `;
+                    container.appendChild(card);
+                }
+            </script>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Мій GitHub Проєкт. Всі права захищені.</p>
+    </footer>
+
+</body>
+</html>
