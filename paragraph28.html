@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фізика: Тиск (Fixed Board Layout)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        
+        body, html { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        /* Головна сітка: Заголовок (авто), Контент (гpriority), Навігація (авто) */
+        .app-grid {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .perspective { perspective: 2000px; }
+        
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            height: 100%;
+            width: 100%;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Запобігання виділенню тексту при тапах на дошці */
+        * { -webkit-user-select: none; user-select: none; }
+
+        .scrollable-quiz {
+            overflow-y: auto;
+            height: 100%;
+            padding-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-grid">
+        <!-- HEADER -->
+        <header class="bg-white border-b border-slate-200 p-4 shadow-sm z-10 text-center">
+            <h1 class="text-3xl font-black text-blue-900 uppercase tracking-tighter">Фізика: Тиск</h1>
+            <div class="flex justify-center gap-3 mt-3">
+                <button onclick="switchTab('cards')" id="tab-cards" class="px-8 py-2 rounded-full font-bold transition-all bg-blue-600 text-white shadow-md">КАРТКИ</button>
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="px-8 py-2 rounded-full font-bold transition-all bg-slate-200 text-slate-600">ТЕСТ</button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="relative overflow-hidden p-6 flex items-center justify-center">
+            
+            <!-- VIEW: CARDS -->
+            <div id="view-cards" class="w-full h-full flex items-center justify-center max-w-5xl mx-auto">
+                <div class="perspective w-full h-full max-h-[500px]">
+                    <div id="main-flip-card" class="flip-card relative w-full h-full cursor-pointer" onclick="toggleFlip()">
+                        <div class="flip-card-inner">
+                            <!-- Питання -->
+                            <div class="flip-card-front bg-white border-4 border-blue-100">
+                                <p id="card-question" class="text-3xl md:text-5xl font-extrabold text-slate-800 text-center leading-tight"></p>
+                            </div>
+                            <!-- Відповідь -->
+                            <div class="flip-card-back bg-blue-700 text-white">
+                                <p id="card-answer" class="text-2xl md:text-4xl font-medium text-center leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: QUIZ -->
+            <div id="view-quiz" class="hidden w-full h-full max-w-5xl mx-auto flex flex-col">
+                <div id="quiz-container" class="scrollable-quiz grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Questions injected here -->
+                </div>
+                <div id="quiz-footer" class="py-4 border-t border-slate-200 flex justify-center bg-white rounded-t-3xl shadow-lg">
+                    <button id="check-btn" onclick="checkQuiz()" class="px-16 py-4 bg-green-600 text-white text-2xl font-black rounded-2xl shadow-xl active:scale-95">ПЕРЕВІРИТИ</button>
+                </div>
+                <!-- Results Popup -->
+                <div id="quiz-results" class="hidden absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center text-center p-10 rounded-3xl">
+                    <h2 class="text-6xl font-black text-slate-800 mb-6">РЕЗУЛЬТАТ</h2>
+                    <p id="score-text" class="text-4xl text-blue-700 font-bold mb-10"></p>
+                    <button onclick="resetQuiz()" class="px-12 py-5 bg-blue-600 text-white text-2xl font-bold rounded-2xl">СПРОБУВАТИ ЩЕ РАЗ</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- FOOTER NAVIGATION (CARDS) -->
+        <footer id="footer-cards" class="bg-slate-800 p-6 text-white shadow-2xl z-10">
+            <div class="max-w-4xl mx-auto flex items-center justify-between">
+                <button onclick="prevCard()" class="p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition active:scale-90">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                
+                <div class="text-center">
+                    <div id="card-index" class="text-4xl font-black">1 / 5</div>
+                    <div class="text-blue-300 text-sm font-bold uppercase tracking-widest mt-1">запитання</div>
+                </div>
+
+                <button onclick="nextCard()" class="p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition active:scale-90">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "Від чого залежить результат дії сили?",
+                a: "Від її модуля (значення), напрямку, точки прикладання та площі поверхні, на яку вона діє.",
+                options: ["Тільки від модуля сили", "Від модуля, напрямку, точки прикладання та площі", "Тільки від маси тіла", "Від об'єму тіла"],
+                correct: 1
+            },
+            {
+                q: "Дайте означення тиску.",
+                a: "Фізична величина, яка дорівнює відношенню сили, що діє перпендикулярно до поверхні, до площі цієї поверхні.",
+                options: ["Добуток сили на площу", "Сила на одиницю маси", "Відношення сили (⊥) до площі поверхні", "Здатність тіла чинити опір"],
+                correct: 2
+            },
+            {
+                q: "Назвіть одиницю тиску в СІ.",
+                a: "Одиницею тиску в СІ є Паскаль (Па). 1 Па = 1 Н / 1 м².",
+                options: ["Ньютон (Н)", "Джоуль (Дж)", "Паскаль (Па)", "Ват (Вт)"],
+                correct: 2
+            },
+            {
+                q: "Дайте означення одиниці тиску (1 Па).",
+                a: "Це тиск, який створює сила в 1 Н, що діє на площу 1 м² перпендикулярно до цієї поверхні.",
+                options: ["Сила 1 Н на площу 1 см²", "Сила 10 Н на площу 1 м²", "Сила 1 Н на площу 1 м²", "Вага 1 кг на площу 1 м²"],
+                correct: 2
+            },
+            {
+                q: "Як можна змінити тиск?",
+                a: "Збільшити: ↑ силу або ↓ площу (лезо). Зменшити: ↓ силу або ↑ площу (лижі, широкі шини).",
+                options: ["Тільки силою дії", "Тільки кольором", "Змінюючи силу або площу поверхні", "Тиск незмінний"],
+                correct: 2
+            }
+        ];
+
+        let currentCardIndex = 0;
+
+        function updateCard() {
+            const card = document.getElementById('main-flip-card');
+            card.classList.remove('flipped');
+            
+            setTimeout(() => {
+                document.getElementById('card-question').textContent = questions[currentCardIndex].q;
+                document.getElementById('card-answer').textContent = questions[currentCardIndex].a;
+                document.getElementById('card-index').textContent = `${currentCardIndex + 1} / ${questions.length}`;
+            }, 150);
+        }
+
+        function toggleFlip() {
+            document.getElementById('main-flip-card').classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % questions.length;
+            updateCard();
+        }
+
+        function prevCard() {
+            currentCardIndex = (currentCardIndex - 1 + questions.length) % questions.length;
+            updateCard();
+        }
+
+        function switchTab(tab) {
+            const isCards = tab === 'cards';
+            document.getElementById('view-cards').style.display = isCards ? 'flex' : 'none';
+            document.getElementById('view-quiz').style.display = isCards ? 'none' : 'flex';
+            document.getElementById('footer-cards').style.display = isCards ? 'block' : 'none';
+            
+            document.getElementById('tab-cards').className = isCards 
+                ? 'px-8 py-2 rounded-full font-bold transition-all bg-blue-600 text-white shadow-md' 
+                : 'px-8 py-2 rounded-full font-bold transition-all bg-slate-200 text-slate-600';
+            
+            document.getElementById('tab-quiz').className = !isCards 
+                ? 'px-8 py-2 rounded-full font-bold transition-all bg-blue-600 text-white shadow-md' 
+                : 'px-8 py-2 rounded-full font-bold transition-all bg-slate-200 text-slate-600';
+
+            if (!isCards) renderQuiz();
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = questions.map((q, i) => `
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <p class="font-bold text-xl text-blue-900 mb-4">${i + 1}. ${q.q}</p>
+                    <div class="grid grid-cols-1 gap-2">
+                        ${q.options.map((opt, optIdx) => `
+                            <label class="flex items-center p-3 rounded-2xl border-2 border-slate-50 hover:border-blue-300 cursor-pointer transition">
+                                <input type="radio" name="q${i}" value="${optIdx}" class="w-6 h-6">
+                                <span class="ml-3 text-lg font-medium text-slate-700">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('quiz-results').classList.add('hidden');
+        }
+
+        function checkQuiz() {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                if (sel && parseInt(sel.value) === q.correct) score++;
+            });
+            document.getElementById('score-text').textContent = `Ви відповіли на ${score} з ${questions.length} правильно!`;
+            document.getElementById('quiz-results').classList.remove('hidden');
+        }
+
+        function resetQuiz() {
+            renderQuiz();
+        }
+
+        window.onload = updateCard;
+    </script>
+</body>
+</html>
