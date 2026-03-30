@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-Контрольні запитання</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+       
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+
+        .answer-container {
+            transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+
+        .answer-container.visible {
+            max-height: 400px;8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фізичний Квіз:
+            opacity: 1;
+        }
+
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+
+
+    <div id="quiz-container" class="max-w-xl w-full bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+        <!-- Header -->
+        <div class="bg-orange-500 p-6 text-white text-center">
+            <h1 class="text-2xl font-bold uppercase tracking-wide">Контрольні запитання</h1>
+            <p class="text-orange-100 mt-1 italic">Параграф 29: Тиск газів і рідин. Закон Паскаля</p>
+        </div>
+
+
+        <div id="game-screen" class="p-8">
+            <div class="space-y-6">
+                <!-- Progress -->
+                <div class="flex justify-between items-center text-sm text-slate-400 font-medium">
+                    <span id="question-counter">Питання 1 з 6</span>
+                    <div class="h-2 w-32 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-orange-500 transition-all duration-300" style="width: 16.6%"></div>
+                    </div>
+                </div>
+
+
+                <!-- Question Card -->
+                <div class="min-h-[120px] flex items-center">
+                    <h2 id="question-text" class="text-xl md:text-2xl font-semibold text-slate-800 leading-tight">
+                        Завантаження...
+                    </h2>
+                </div>
+
+
+                <!-- Answer Section -->
+                <div id="answer-section" class="answer-container">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                        <p id="answer-text" class="text-blue-900 leading-relaxed italic"></p>
+                    </div>
+                </div>
+
+
+                <!-- Hint Section -->
+                <div id="hint-section" class="flex items-start gap-2 text-slate-500 bg-slate-50 p-3 rounded-lg border border-dashed border-slate-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0 text-orange-400"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    <p id="hint-text" class="text-sm"></p>
+                </div>
+
+
+                <!-- Actions -->
+                <div class="flex flex-col gap-4 mt-8">
+                    <button id="check-btn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-orange-200 transition-all flex items-center justify-center gap-2">
+                        Перевірити відповідь
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </button>
+
+
+                    <div id="nav-btns" class="hidden flex gap-3">
+                        <button id="prev-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg> Назад
+                        </button>
+                        <button id="next-btn" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+                            Наступне запитання
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Finish Screen -->
+        <div id="finish-screen" class="hidden p-8 text-center py-10 space-y-6">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 text-green-600 rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <h2 class="text-3xl font-bold text-slate-800">Чудова робота!</h2>
+            <p class="text-slate-600 px-4">
+                Ви опрацювали всі контрольні запитання до параграфа 29. Тепер ви готові до уроку!
+            </p>
+            <button id="reset-btn" class="inline-flex items-center gap-2 text-blue-600 font-bold hover:underline">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg> Спробувати ще раз
+            </button>
+        </div>
+
+
+        <!-- Footer -->
+        <div class="bg-slate-50 p-4 text-center border-t border-slate-100">
+            <span class="text-xs text-slate-400 font-medium">Фізика 7 клас • Навчальний тренажер</span>
+        </div>
+    </div>
+
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                question: "Як довести, що гази створюють тиск на стінки посудини?",
+                answer: "Найпростіший доказ — надування гумової кульки. Ми бачимо, що оболонка розтягується рівномірно в усіх напрямках. Це відбувається тому, що молекули газу безперервно б'ються об стінки, створюючи силу тиску.",
+                hint: "Згадайте про надувну кульку або камеру колеса."
+            },
+            {
+                id: 2,
+                question: "У чому причина тиску газів?",
+                answer: "Причина — у безперервному хаотичному русі молекул. Величезна кількість ударів молекул об стінки посудини створює сумарну силу тиску. Хоча один удар слабкий, мільярди ударів щосекунди створюють значний натиск.",
+                hint: "Подумайте про рух молекул та їхню взаємодію зі стінками."
+            },
+            {
+                id: 3,
+                question: "Чому тиск газів зростає зі зростанням їхньої густини? А при збільшенні температури?",
+                answer: "1. Зі зростанням густини в одиниці об'єму стає більше молекул, тому кількість ударів об стінки зростає. 2. При збільшенні температури швидкість руху молекул зростає, вони б'ються об стінки частіше і сильніше.",
+                hint: "Більше молекул = більше ударів. Швидші молекули = сильніші удари."
+            },
+            {
+                id: 4,
+                question: "Чому рідина створює тиск не тільки на дно посудини, а й на її бічні стінки?",
+                answer: "Це зумовлено плинністю рідин. Через дію сили тяжіння верхні шари рідини тиснуть на нижні, а оскільки молекули рідини можуть вільно переміщатися, цей тиск згідно із законом Паскаля передається не лише вниз, а й у боки.",
+                hint: "Згадайте про головну властивість рідин — плинність."
+            },
+            {
+                id: 5,
+                question: "Сформулюйте закон Паскаля.",
+                answer: "Тиск, створюваний на нерухому рідину або газ зовнішніми силами, передається ними однаково в усіх напрямках.",
+                hint: "Це фундаментальний закон гідростатики."
+            },
+            {
+                id: 6,
+                question: "Доведіть, що властивість рідин і газів передавати тиск у всіх напрямках має значення в житті.",
+                answer: "Ця властивість лежить в основі роботи гідравлічних машин (пресів, підйомників, гальм автомобілів). Завдяки цьому ми можемо прикладати невелику силу, щоб підняти величезний вантаж або зупинити авто.",
+                hint: "Згадайте про гальма в машині або роботу домкрата."
+            }
+        ];
+
+
+        let currentIndex = 0;
+
+
+        const gameScreen = document.getElementById('game-screen');
+        const finishScreen = document.getElementById('finish-screen');
+        const questionText = document.getElementById('question-text');
+        const answerText = document.getElementById('answer-text');
+        const hintText = document.getElementById('hint-text');
+        const questionCounter = document.getElementById('question-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const answerSection = document.getElementById('answer-section');
+        const hintSection = document.getElementById('hint-section');
+       
+        const checkBtn = document.getElementById('check-btn');
+        const navBtns = document.getElementById('nav-btns');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+
+        function updateUI() {
+            const q = questions[currentIndex];
+            questionText.innerText = q.question;
+            answerText.innerText = q.answer;
+            hintText.innerText = "Підказка: " + q.hint;
+            questionCounter.innerText = `Питання ${currentIndex + 1} з ${questions.length}`;
+            progressBar.style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
+
+
+            // Reset state
+            answerSection.classList.remove('visible');
+            hintSection.classList.remove('hidden');
+            checkBtn.classList.remove('hidden');
+            navBtns.classList.add('hidden');
+
+
+            prevBtn.disabled = currentIndex === 0;
+           
+            if (currentIndex === questions.length - 1) {
+                nextBtn.innerHTML = `Завершити <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+            } else {
+                nextBtn.innerHTML = `Наступне запитання <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+            }
+        }
+
+
+        checkBtn.addEventListener('click', () => {
+            answerSection.classList.add('visible');
+            hintSection.classList.add('hidden');
+            checkBtn.classList.add('hidden');
+            navBtns.classList.remove('hidden');
+        });
+
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                updateUI();
+            } else {
+                gameScreen.classList.add('hidden');
+                finishScreen.classList.remove('hidden');
+            }
+        });
+
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateUI();
+            }
+        });
+
+
+        resetBtn.addEventListener('click', () => {
+            currentIndex = 0;
+            finishScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            updateUI();
+        });
+
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
