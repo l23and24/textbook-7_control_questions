@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Фізичний Квіз: Параграф 29</title>
+    <title>Контрольнізапитання (с. 212)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -20,68 +20,87 @@
         }
 
         .answer-container.visible {
-            max-height: 400px;
+            max-height: 1000px;
             opacity: 1;
         }
 
         .hidden {
             display: none;
         }
+
+        /* Адаптація для великих екранів смарт-дошок */
+        @media (min-width: 1024px) {
+            .quiz-card {
+                max-width: 90% !important;
+                min-height: 70vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .content-wrapper {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+                align-items: center;
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+<body class="min-h-screen bg-slate-50 flex items-center justify-center p-2 sm:p-6">
 
-    <div id="quiz-container" class="max-w-xl w-full bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+    <div id="quiz-container" class="quiz-card w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-200 transition-all">
         <!-- Header -->
-        <div class="bg-orange-500 p-6 text-white text-center">
-            <h1 class="text-2xl font-bold uppercase tracking-wide">Контрольні запитання</h1>
-            <p class="text-orange-100 mt-1 italic">Параграф 29: Тиск газів і рідин. Закон Паскаля</p>
+        <div class="bg-orange-500 p-4 sm:p-8 text-white text-center">
+            <h1 class="text-xl sm:text-3xl font-bold uppercase tracking-wide leading-tight">Контрольні запитання</h1>
+            <p class="text-orange-100 mt-2 text-sm sm:text-lg italic"></p>
         </div>
 
-        <div id="game-screen" class="p-8">
-            <div class="space-y-6">
+        <div id="game-screen" class="p-4 sm:p-10">
+            <div class="space-y-6 sm:space-y-8">
                 <!-- Progress -->
-                <div class="flex justify-between items-center text-sm text-slate-400 font-medium">
+                <div class="flex justify-between items-center text-xs sm:text-base text-slate-400 font-medium">
                     <span id="question-counter">Питання 1 з 6</span>
-                    <div class="h-2 w-32 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-2 sm:h-3 w-32 sm:w-64 bg-slate-100 rounded-full overflow-hidden">
                         <div id="progress-bar" class="h-full bg-orange-500 transition-all duration-300" style="width: 16.6%"></div>
                     </div>
                 </div>
 
-                <!-- Question Card -->
-                <div class="min-h-[120px] flex items-center">
-                    <h2 id="question-text" class="text-xl md:text-2xl font-semibold text-slate-800 leading-tight">
-                        Завантаження...
-                    </h2>
-                </div>
+                <div class="content-wrapper">
+                    <!-- Question Card -->
+                    <div class="min-h-[100px] sm:min-h-[150px] flex items-center">
+                        <h2 id="question-text" class="text-lg sm:text-3xl font-bold text-slate-800 leading-snug">
+                            Завантаження...
+                        </h2>
+                    </div>
 
-                <!-- Answer Section -->
-                <div id="answer-section" class="answer-container">
-                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
-                        <p id="answer-text" class="text-blue-900 leading-relaxed italic"></p>
+                    <!-- Answer Section -->
+                    <div id="answer-section" class="answer-container">
+                        <div class="bg-blue-50 border-l-8 border-blue-500 p-4 sm:p-8 rounded-r-xl">
+                            <p id="answer-text" class="text-blue-900 text-sm sm:text-xl leading-relaxed italic font-medium"></p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Hint Section -->
-                <div id="hint-section" class="flex items-start gap-2 text-slate-500 bg-slate-50 p-3 rounded-lg border border-dashed border-slate-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0 text-orange-400"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-                    <p id="hint-text" class="text-sm"></p>
+                <div id="hint-section" class="flex items-start gap-3 text-slate-500 bg-slate-50 p-4 rounded-xl border border-dashed border-slate-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-orange-400"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    <p id="hint-text" class="text-sm sm:text-lg"></p>
                 </div>
 
                 <!-- Actions -->
-                <div class="flex flex-col gap-4 mt-8">
-                    <button id="check-btn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-orange-200 transition-all flex items-center justify-center gap-2">
+                <div class="flex flex-col gap-4 pt-4 sm:pt-8">
+                    <button id="check-btn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 sm:py-6 text-lg sm:text-2xl rounded-2xl shadow-xl shadow-orange-100 transition-all flex items-center justify-center gap-3 active:scale-95">
                         Перевірити відповідь
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </button>
 
-                    <div id="nav-btns" class="hidden flex gap-3">
-                        <button id="prev-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg> Назад
+                    <div id="nav-btns" class="hidden flex gap-4">
+                        <button id="prev-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 sm:py-6 text-lg sm:text-xl rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg> Назад
                         </button>
-                        <button id="next-btn" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
-                            Наступне запитання
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        <button id="next-btn" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 sm:py-6 text-lg sm:text-2xl rounded-2xl shadow-xl shadow-blue-100 transition-all flex items-center justify-center gap-3 active:scale-95">
+                            Наступне питання
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                         </button>
                     </div>
                 </div>
@@ -89,22 +108,22 @@
         </div>
 
         <!-- Finish Screen -->
-        <div id="finish-screen" class="hidden p-8 text-center py-10 space-y-6">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 text-green-600 rounded-full mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        <div id="finish-screen" class="hidden p-6 sm:p-20 text-center space-y-8">
+            <div class="inline-flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 bg-green-100 text-green-600 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
             </div>
-            <h2 class="text-3xl font-bold text-slate-800">Чудова робота!</h2>
-            <p class="text-slate-600 px-4">
-                Ви опрацювали всі контрольні запитання до параграфа 29. Тепер ви готові до уроку!
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-slate-800">Чудова робота!</h2>
+            <p class="text-slate-600 text-lg sm:text-2xl px-4">
+                Ви успішно опрацювали всі контрольні запитання до параграфа 29.
             </p>
-            <button id="reset-btn" class="inline-flex items-center gap-2 text-blue-600 font-bold hover:underline">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg> Спробувати ще раз
+            <button id="reset-btn" class="inline-flex items-center gap-3 text-blue-600 font-bold text-lg sm:text-2xl hover:underline">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg> Почати спочатку
             </button>
         </div>
 
         <!-- Footer -->
-        <div class="bg-slate-50 p-4 text-center border-t border-slate-100">
-            <span class="text-xs text-slate-400 font-medium">Фізика 7 клас • Навчальний тренажер</span>
+        <div class="bg-slate-50 p-4 sm:p-6 text-center border-t border-slate-100">
+            <span class="text-sm sm:text-base text-slate-400 font-medium">Фізика 7 клас • Інтерактивний тренажер</span>
         </div>
     </div>
 
@@ -170,11 +189,10 @@
             const q = questions[currentIndex];
             questionText.innerText = q.question;
             answerText.innerText = q.answer;
-            hintText.innerText = "Підказка: " + q.hint;
+            hintText.innerText = q.hint;
             questionCounter.innerText = `Питання ${currentIndex + 1} з ${questions.length}`;
             progressBar.style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
 
-            // Reset state
             answerSection.classList.remove('visible');
             hintSection.classList.remove('hidden');
             checkBtn.classList.remove('hidden');
@@ -183,9 +201,9 @@
             prevBtn.disabled = currentIndex === 0;
             
             if (currentIndex === questions.length - 1) {
-                nextBtn.innerHTML = `Завершити <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+                nextBtn.innerHTML = `Завершити <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
             } else {
-                nextBtn.innerHTML = `Наступне запитання <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+                nextBtn.innerHTML = `Наступне питання <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
             }
         }
 
@@ -194,6 +212,7 @@
             hintSection.classList.add('hidden');
             checkBtn.classList.add('hidden');
             navBtns.classList.remove('hidden');
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         });
 
         nextBtn.addEventListener('click', () => {
@@ -220,7 +239,6 @@
             updateUI();
         });
 
-        // Initialize
         updateUI();
     </script>
 </body>
