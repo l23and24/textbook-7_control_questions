@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-Контрольні запитання</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фізичний Квіз: Параграф 29</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-       
+        
         body {
             font-family: 'Inter', sans-serif;
         }
-
 
         .answer-container {
             transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
@@ -18,14 +19,10 @@
             overflow: hidden;
         }
 
-
         .answer-container.visible {
-            max-height: 400px;8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Фізичний Квіз:
+            max-height: 400px;
             opacity: 1;
         }
-
 
         .hidden {
             display: none;
@@ -34,14 +31,12 @@
 </head>
 <body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
 
-
     <div id="quiz-container" class="max-w-xl w-full bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
         <!-- Header -->
         <div class="bg-orange-500 p-6 text-white text-center">
             <h1 class="text-2xl font-bold uppercase tracking-wide">Контрольні запитання</h1>
             <p class="text-orange-100 mt-1 italic">Параграф 29: Тиск газів і рідин. Закон Паскаля</p>
         </div>
-
 
         <div id="game-screen" class="p-8">
             <div class="space-y-6">
@@ -53,14 +48,12 @@
                     </div>
                 </div>
 
-
                 <!-- Question Card -->
                 <div class="min-h-[120px] flex items-center">
                     <h2 id="question-text" class="text-xl md:text-2xl font-semibold text-slate-800 leading-tight">
                         Завантаження...
                     </h2>
                 </div>
-
 
                 <!-- Answer Section -->
                 <div id="answer-section" class="answer-container">
@@ -69,13 +62,11 @@
                     </div>
                 </div>
 
-
                 <!-- Hint Section -->
                 <div id="hint-section" class="flex items-start gap-2 text-slate-500 bg-slate-50 p-3 rounded-lg border border-dashed border-slate-300">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0 text-orange-400"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                     <p id="hint-text" class="text-sm"></p>
                 </div>
-
 
                 <!-- Actions -->
                 <div class="flex flex-col gap-4 mt-8">
@@ -83,7 +74,6 @@
                         Перевірити відповідь
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </button>
-
 
                     <div id="nav-btns" class="hidden flex gap-3">
                         <button id="prev-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2">
@@ -97,7 +87,6 @@
                 </div>
             </div>
         </div>
-
 
         <!-- Finish Screen -->
         <div id="finish-screen" class="hidden p-8 text-center py-10 space-y-6">
@@ -113,13 +102,11 @@
             </button>
         </div>
 
-
         <!-- Footer -->
         <div class="bg-slate-50 p-4 text-center border-t border-slate-100">
             <span class="text-xs text-slate-400 font-medium">Фізика 7 клас • Навчальний тренажер</span>
         </div>
     </div>
-
 
     <script>
         const questions = [
@@ -161,9 +148,7 @@
             }
         ];
 
-
         let currentIndex = 0;
-
 
         const gameScreen = document.getElementById('game-screen');
         const finishScreen = document.getElementById('finish-screen');
@@ -174,13 +159,12 @@
         const progressBar = document.getElementById('progress-bar');
         const answerSection = document.getElementById('answer-section');
         const hintSection = document.getElementById('hint-section');
-       
+        
         const checkBtn = document.getElementById('check-btn');
         const navBtns = document.getElementById('nav-btns');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         const resetBtn = document.getElementById('reset-btn');
-
 
         function updateUI() {
             const q = questions[currentIndex];
@@ -190,16 +174,14 @@
             questionCounter.innerText = `Питання ${currentIndex + 1} з ${questions.length}`;
             progressBar.style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
 
-
             // Reset state
             answerSection.classList.remove('visible');
             hintSection.classList.remove('hidden');
             checkBtn.classList.remove('hidden');
             navBtns.classList.add('hidden');
 
-
             prevBtn.disabled = currentIndex === 0;
-           
+            
             if (currentIndex === questions.length - 1) {
                 nextBtn.innerHTML = `Завершити <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
             } else {
@@ -207,14 +189,12 @@
             }
         }
 
-
         checkBtn.addEventListener('click', () => {
             answerSection.classList.add('visible');
             hintSection.classList.add('hidden');
             checkBtn.classList.add('hidden');
             navBtns.classList.remove('hidden');
         });
-
 
         nextBtn.addEventListener('click', () => {
             if (currentIndex < questions.length - 1) {
@@ -226,7 +206,6 @@
             }
         });
 
-
         prevBtn.addEventListener('click', () => {
             if (currentIndex > 0) {
                 currentIndex--;
@@ -234,14 +213,12 @@
             }
         });
 
-
         resetBtn.addEventListener('click', () => {
             currentIndex = 0;
             finishScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
             updateUI();
         });
-
 
         // Initialize
         updateUI();
