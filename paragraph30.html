@@ -111,11 +111,18 @@
                 <button onclick="quiz.copyResultToClipboard()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all">
                     Надіслати результат вчителю
                 </button>
+                <div id="instruction-box" class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-xs text-blue-800 text-left mb-2 hidden fade-in">
+                    <b>Що робити далі?</b><br>
+                    1. Тепер відкрий Viber, Telegram або Google Classroom.<br>
+                    2. Обери чат з вчителем.<br>
+                    3. Натисни в полі введення тексту та обери <b>"Вставити" (Paste)</b>.<br>
+                    4. Надішліть повідомлення!
+                </div>
                 <button onclick="quiz.generateCertificate()" id="cert-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all">
                     Отримати сертифікат
                 </button>
             </div>
-            <p id="copy-msg" class="mt-4 text-xs text-green-600 font-bold opacity-0 transition-opacity">Результат скопійовано! Надішліть його вчителю.</p>
+            <p id="copy-msg" class="mt-4 text-xs text-green-600 font-bold opacity-0 transition-opacity">Результат скопійовано! Тепер встав його в чат з вчителем.</p>
         </div>
     </div>
 
@@ -145,7 +152,7 @@
             { q: "Оберіть правильну формулу для гідростатичного тиску:", options: ["p = F / S", "p = ρgh", "F = mg", "p = m / V"], correct: [1] },
             { q: "Як змінюється тиск у рідині зі збільшенням висоти її стовпа?", options: ["Збільшується", "Зменшується", "Не змінюється", "Зникає зовсім"], correct: [0] },
             { q: "Від яких фізичних величин залежить тиск у рідині?", options: ["Густина рідини", "Висота стовпа (глибина)", "Колір рідини", "Форма та об'єм посудини"], correct: [0, 1] },
-            { q: "Дослід Блеза Паскаля з тонкою трубкою довів, що:", options: ["Вода не стискається", "Тиск залежить від висоти стовпа", "Тиск не залежить від форми посудини", "Вода замерзає під тиском"], correct: [1, 2] },
+            { q: "Дослід Блеза Паскаля з тонкою трубкою довів, що:", options: ["Вода не стискається", "Тиск залежить від висоти стовпа", "Тиск не залежить від форми посудини", "Вода замерзає под тиском"], correct: [1, 2] },
             { q: "Чому на одному рівні в нерухомій рідині тиск однаковий?", options: ["Бо однакова висота стовпа над точками", "Через передачу тиску за законом Паскаля", "Бо рідина стискається", "Бо молекули не рухаються"], correct: [0, 1] },
             { q: "В яких одиницях вимірюють гідростатичний тиск?", options: ["Ньютон (Н)", "Паскаль (Па)", "Кілограм (кг)", "Метр (м)"], correct: [1] },
             { q: "Тиск усередині нерухомої рідини діє:", options: ["Лише вертикально вниз", "Лише на стінки посудини", "В усіх напрямках однаково", "Лише вертикально вгору"], correct: [2] },
@@ -265,12 +272,13 @@
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
 
+                // Show instruction and message
+                document.getElementById('instruction-box').classList.remove('hidden');
                 const msg = document.getElementById('copy-msg');
                 if(msg) {
                     msg.style.opacity = '1';
-                    setTimeout(() => msg.style.opacity = '0', 3000);
                 } else {
-                    alert("Результат скопійовано! Надішліть його вчителю.");
+                    alert("Результат скопійовано! Тепер встав його в чат з вчителем.");
                 }
             }
 
