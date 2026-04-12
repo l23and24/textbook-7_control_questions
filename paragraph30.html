@@ -2,314 +2,218 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Тест: Гідростатичний тиск</title>
+    <!-- Favicon using Emoji -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💧</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
+        
+        :root {
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+        }
+
         body { 
             font-family: 'Montserrat', sans-serif; 
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
+            overflow-x: hidden;
+            background: linear-gradient(180deg, #f0f9ff 0%, #bae6fd 100%);
+            min-height: 100vh;
+            color: #1e293b;
         }
-        .timer-bar { transition: width 1s linear; }
+
+        /* Optimized Mobile Background */
+        .bubble {
+            position: fixed; 
+            bottom: -50px; 
+            background: rgba(255, 255, 255, 0.4); 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: float 12s infinite linear; 
+            z-index: -1;
+            will-change: transform;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
+        }
+
+        /* Mobile-friendly Controls */
         .checkbox-custom:checked + label { 
-            background-color: #3b82f6; 
+            background-color: #2563eb; 
             color: white; 
-            border-color: #2563eb;
-            transform: scale(1.02);
+            border-color: #1d4ed8;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
-        .fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        #certificate-template {
-            width: 800px;
-            height: 560px;
-            position: absolute;
-            left: -9999px;
-            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
-            border: 15px solid #3b82f6;
-            padding: 40px;
-            text-align: center;
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
         }
+
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* Disable text selection during test */
+        .no-select { user-select: none; -webkit-user-select: none; }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-2 sm:p-4">
+<body class="safe-area-bottom">
 
-    <div id="app" class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+    <div id="bubbles-container"></div>
+
+    <div id="app" class="max-w-xl mx-auto px-4 pt-4 pb-20">
         
-        <!-- Already Taken Screen -->
-        <div id="already-taken-screen" class="hidden p-8 text-center fade-in">
-            <div class="mb-6 inline-block p-4 bg-orange-100 rounded-full">
-                <svg class="w-12 h-12 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        <!-- Header -->
+        <header class="glass-card rounded-[2rem] p-6 mb-6 text-center fade-in">
+            <div class="inline-flex p-3 bg-blue-600/10 rounded-2xl mb-3">
+                <span class="text-3xl">🌊</span>
             </div>
-            <h2 class="text-2xl font-bold text-slate-800 mb-2">Тест уже пройдено</h2>
-            <p id="prev-result-text" class="text-slate-600 mb-6">Ви вже завершили це тестування.</p>
-            <div class="space-y-3">
-                <button onclick="quiz.copyResultToClipboard()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition-all">
-                    Скопіювати результат для вчителя
-                </button>
-                <button onclick="quiz.generateCertificateFromStorage()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition-all">
-                    Завантажити сертифікат знову
+            <h1 class="text-2xl font-extrabold text-slate-800 leading-tight">Гідростатичний тиск</h1>
+            <p class="text-blue-600 font-bold text-[10px] uppercase tracking-[0.25em] mt-1">Фізика • 7 клас</p>
+        </header>
+
+        <!-- Quiz Container -->
+        <div id="quiz-screen" class="space-y-4 fade-in no-select">
+            <div id="questions-list" class="space-y-4"></div>
+
+            <div class="pt-6" id="submit-container">
+                <button onclick="quiz.submitAll()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-5 rounded-2xl shadow-lg active:scale-95 transition-all text-lg uppercase tracking-wider flex items-center justify-center gap-3">
+                    <span>Перевірити тест</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </button>
             </div>
         </div>
 
-        <!-- Start Screen -->
-        <div id="start-screen" class="p-6 sm:p-8 text-center fade-in">
-            <div class="mb-6 inline-block p-4 bg-blue-100 rounded-full">
-                <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.675.337a4 4 0 01-2.574.346l-2.387-.477a2 2 0 00-1.022.547l-2.387 2.387a2 2 0 000 2.828l.586.586a2 2 0 002.828 0l2.387-2.387a2 2 0 011.022-.547l2.387-.477a6 6 0 013.86.517l.675.337a4 4 0 002.574.346l2.387-.477a2 2 0 011.022.547l2.387 2.387a2 2 0 002.828 0l.586-.586a2 2 0 000-2.828l-2.387-2.387z"></path>
-                </svg>
+        <!-- Mobile-friendly Results -->
+        <div id="result-screen" class="hidden glass-card rounded-[2.5rem] p-8 text-center fade-in border-2 border-blue-100 shadow-2xl">
+            <h2 class="text-xl font-bold text-slate-700 mb-6">Ваш результат</h2>
+            <div class="inline-flex items-center justify-center w-44 h-44 rounded-full border-[10px] border-white bg-blue-50 shadow-inner mb-6 relative">
+                <span id="grade-display" class="text-7xl font-black text-blue-600">0</span>
+                <div class="absolute -bottom-2 bg-blue-600 text-white text-[10px] px-4 py-1.5 rounded-full font-extrabold uppercase tracking-widest shadow-md">БАЛІВ</div>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-4">Гідростатичний тиск</h1>
-            <p class="text-slate-600 mb-6 text-sm sm:text-base">Контрольні запитання (7 клас).<br><b>15 секунд</b> на запитання.<br><span class="text-red-500 font-bold text-xs">УВАГА: ТІЛЬКИ ОДНА СПРОБА!</span></p>
-            
-            <input type="text" id="student-name" placeholder="Прізвище та Ім'я учня" 
-                class="w-full p-4 mb-6 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none text-lg transition-all">
-            
-            <button onclick="quiz.start()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition-all text-lg">
-                Почати тест
+            <p id="final-score-text" class="text-slate-500 font-semibold text-base mb-8"></p>
+            <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold active:scale-95 transition-all shadow-xl">
+                🔄 Спробувати ще раз
             </button>
         </div>
 
-        <!-- Quiz Screen -->
-        <div id="quiz-screen" class="hidden fade-in">
-            <div class="h-3 bg-slate-100 w-full relative">
-                <div id="timer-bar" class="h-full bg-blue-500 w-full timer-bar"></div>
-            </div>
-            <div class="p-5 sm:p-8">
-                <div class="flex justify-between items-center mb-4">
-                    <span id="question-counter" class="text-xs font-bold text-blue-500 uppercase tracking-widest">Запитання 1/12</span>
-                    <span id="timer-text" class="text-lg font-mono font-black text-slate-700 bg-slate-100 px-3 py-1 rounded-lg">15s</span>
-                </div>
-                <h2 id="question-text" class="text-lg sm:text-xl font-bold text-slate-800 mb-6 min-h-[60px] leading-snug">...</h2>
-                <div id="options-container" class="space-y-3"></div>
-                <button id="next-btn" onclick="quiz.submitAnswer()" class="mt-8 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition-all">
-                    Підтвердити
-                </button>
-            </div>
-        </div>
-
-        <!-- Result Screen -->
-        <div id="result-screen" class="hidden p-6 sm:p-8 text-center fade-in">
-            <h2 class="text-2xl font-bold text-slate-800 mb-2">Тест завершено!</h2>
-            <p id="final-score-text" class="text-slate-600 mb-4 text-sm">...</p>
-            
-            <div class="relative inline-block mb-6">
-                <svg class="w-32 h-32 text-blue-100" viewBox="0 0 36 36">
-                    <path class="stroke-current text-blue-500" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                </svg>
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <span id="grade-display" class="text-4xl font-black text-blue-600">0</span>
-                </div>
-            </div>
-
-            <div class="space-y-3">
-                <button onclick="quiz.copyResultToClipboard()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all">
-                    Надіслати результат вчителю
-                </button>
-                <div id="instruction-box" class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-xs text-blue-800 text-left mb-2 hidden fade-in">
-                    <b>Що робити далі?</b><br>
-                    1. Тепер відкрий Viber, Telegram або Google Classroom.<br>
-                    2. Обери чат з вчителем.<br>
-                    3. Натисни в полі введення тексту та обери <b>"Вставити" (Paste)</b>.<br>
-                    4. Надішліть повідомлення!
-                </div>
-                <button onclick="quiz.generateCertificate()" id="cert-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all">
-                    Отримати сертифікат
-                </button>
-            </div>
-            <p id="copy-msg" class="mt-4 text-xs text-green-600 font-bold opacity-0 transition-opacity">Результат скопійовано! Тепер встав його в чат з вчителем.</p>
-        </div>
-    </div>
-
-    <!-- Hidden Template -->
-    <div id="certificate-template">
-        <h1 style="font-size: 48px; color: #1e3a8a; margin-bottom: 10px;">СЕРТИФІКАТ</h1>
-        <p style="font-size: 20px; color: #64748b;">про проходження тестування з фізики</p>
-        <div style="margin: 40px 0; border-bottom: 2px solid #3b82f6; display: inline-block; min-width: 400px;">
-            <h2 id="cert-name" style="font-size: 32px; color: #3b82f6; margin-bottom: 5px;">Прізвище Ім'я</h2>
-        </div>
-        <p style="font-size: 22px; color: #1e293b;">Тема: <b>Гідростатичний тиск</b></p>
-        <div style="margin-top: 30px; background: #3b82f6; color: white; display: inline-block; padding: 15px 40px; border-radius: 50px;">
-            <span style="font-size: 28px;">Оцінка: <b id="cert-grade">12</b> балів</span>
-        </div>
-        <div style="margin-top: 50px; display: flex; justify-content: space-between; font-size: 14px; color: #94a3b8; width: 100%;">
-            <span id="cert-date">Дата: </span>
-            <span id="cert-id">ID: </span>
-        </div>
     </div>
 
     <script>
-        const DEFAULT_TIME = 15;
-        const TEST_ID = "hydrostatic_7th_grade_test_v1";
-
         const questions = [
-            { q: "У чому причина виникнення тиску всередині рідини?", options: ["Вага шарів рідини, що лежать вище", "Безперервний хаотичний рух молекул", "Сила тертя між шарами", "Наявність атмосферного тиску"], correct: [0, 1] },
-            { q: "Оберіть правильну формулу для гідростатичного тиску:", options: ["p = F / S", "p = ρgh", "F = mg", "p = m / V"], correct: [1] },
-            { q: "Як змінюється тиск у рідині зі збільшенням висоти її стовпа?", options: ["Збільшується", "Зменшується", "Не змінюється", "Зникає зовсім"], correct: [0] },
-            { q: "Від яких фізичних величин залежить тиск у рідині?", options: ["Густина рідини", "Висота стовпа (глибина)", "Колір рідини", "Форма та об'єм посудини"], correct: [0, 1] },
-            { q: "Дослід Блеза Паскаля з тонкою трубкою довів, що:", options: ["Вода не стискається", "Тиск залежить від висоти стовпа", "Тиск не залежить від форми посудини", "Вода замерзає под тиском"], correct: [1, 2] },
-            { q: "Чому на одному рівні в нерухомій рідині тиск однаковий?", options: ["Бо однакова висота стовпа над точками", "Через передачу тиску за законом Паскаля", "Бо рідина стискається", "Бо молекули не рухаються"], correct: [0, 1] },
-            { q: "В яких одиницях вимірюють гідростатичний тиск?", options: ["Ньютон (Н)", "Паскаль (Па)", "Кілограм (кг)", "Метр (м)"], correct: [1] },
-            { q: "Тиск усередині нерухомої рідини діє:", options: ["Лише вертикально вниз", "Лише на стінки посудини", "В усіх напрямках однаково", "Лише вертикально вгору"], correct: [2] },
-            { q: "Якщо налити олію та воду на однакову висоту, де тиск більший?", options: ["У воді (ρ=1000 кг/м³)", "В олії (ρ=900 кг/м³)", "Тиск буде однаковим", "Залежить від площі дна"], correct: [0] },
-            { q: "Прилад для вимірювання тиску всередині рідини називається:", options: ["Барометр", "Рідинний манометр", "Динамометр", "Ареометр"], correct: [1] },
-            { q: "Що станеться з тиском на дно, якщо висоту стовпа подвоїти?", options: ["Збільшиться у 2 рази", "Зменшиться у 2 рази", "Не зміниться", "Збільшиться у 4 рази"], correct: [0] },
-            { q: "Закон Паскаля стверджує, що тиск у рідинах передається:", options: ["Лише в напрямку дії сили", "В усіх напрямках без змін", "Лише на дно посудини", "Лише на стінки посудини"], correct: [1] }
+            { q: "У чому головна причина виникнення тиску всередині рідини?", options: ["Вага шарів рідини, що лежать вище", "Безперервний хаотичний рух молекул", "Сила тертя між шарами", "Наявність атмосферного тиску"], correct: [0, 1] },
+            { q: "Яка формула використовується для обчислення гідростатичного тиску?", options: ["p = F / S", "p = ρgh", "F = mg", "p = m / V"], correct: [1] },
+            { q: "Як змінюється тиск у рідині, якщо збільшити глибину занурення?", options: ["Збільшиться", "Зменшується", "Не зміниться", "Зникне зовсім"], correct: [0] },
+            { q: "Від чого ЗАЛЕЖИТЬ тиск нерухомої рідини на дно посудини?", options: ["Від густини рідини", "Від глибини (висоти стовпа)", "Від форми посудини", "Від площі дна"], correct: [0, 1] },
+            { q: "Дослід Паскаля з тонкою трубкою довів, що:", options: ["Вода не стискається", "Тиск залежить від висоти стовпа", "Тиск не залежить від форми посудини", "Бочка була дірява"], correct: [1, 2] },
+            { q: "Тиск усередині нерухомої рідини на одному рівні:", options: ["Завжди однаковий", "Більший біля стінок", "Менший в центрі", "Залежить від ширини посудини"], correct: [0] },
+            { q: "Одиниця вимірювання тиску в системі СІ:", options: ["Ньютон", "Паскаль", "Кілограм", "Джоуль"], correct: [1] },
+            { q: "Тиск усередині рідини передається:", options: ["Тільки вниз", "Тільки на стінки", "В усіх напрямках однаково", "Тільки вгору"], correct: [2] },
+            { q: "Де тиск на глибині 1 м буде більшим: у морі чи в річці?", options: ["У морі (солона вода густіша)", "У річці", "Тиск однаковий", "Залежить від погоди"], correct: [0] },
+            { q: "Прилад для вимірювання тиску всередині рідин:", options: ["Барометр", "Рідинний манометр", "Спідометр", "Термометр"], correct: [1] },
+            { q: "Якщо налити ртуть та воду на однакову висоту, де тиск на дно більший?", options: ["У ртуті (густина 13600 кг/м³)", "У воді (густина 1000 кг/м³)", "Однаковий", "Тиску не буде"], correct: [0] },
+            { q: "Чи залежить гідростатичний тиск від маси всієї рідини в посудині?", options: ["Ні, тільки від густини та висоти стовпа", "Так, чим більше літрів, тим більший тиск", "Залежить тільки від температури", "Залежить від кольору рідини"], correct: [0] }
         ];
 
         class Quiz {
             constructor() {
-                this.currentQuestion = 0;
-                this.score = 0;
-                this.timer = null;
-                this.timeLeft = DEFAULT_TIME;
-                this.studentName = "";
-                this.checkPreviousAttempt();
+                this.init();
+                this.createBubbles();
             }
 
-            checkPreviousAttempt() {
-                const saved = localStorage.getItem(TEST_ID);
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    document.getElementById('start-screen').classList.add('hidden');
-                    document.getElementById('already-taken-screen').classList.remove('hidden');
-                    document.getElementById('prev-result-text').innerText = `Учень ${data.name} вже пройшов цей тест з результатом ${data.grade} балів.`;
-                    this.studentName = data.name;
-                    this.score = data.score;
+            createBubbles() {
+                const container = document.getElementById('bubbles-container');
+                const count = window.innerWidth < 600 ? 10 : 20;
+                for (let i = 0; i < count; i++) {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    const size = Math.random() * 30 + 10;
+                    bubble.style.width = `${size}px`;
+                    bubble.style.height = `${size}px`;
+                    bubble.style.left = `${Math.random() * 100}vw`;
+                    bubble.style.animationDelay = `${Math.random() * 12}s`;
+                    bubble.style.animationDuration = `${Math.random() * 8 + 8}s`;
+                    container.appendChild(bubble);
                 }
             }
 
-            start() {
-                const name = document.getElementById('student-name').value.trim();
-                if (name.length < 3) { alert("Введіть Прізвище та Ім'я"); return; }
-                this.studentName = name;
-                document.getElementById('start-screen').classList.add('hidden');
-                document.getElementById('quiz-screen').classList.remove('hidden');
-                this.loadQuestion();
+            init() {
+                const list = document.getElementById('questions-list');
+                list.innerHTML = questions.map((q, qIdx) => `
+                    <div id="q-container-${qIdx}" class="glass-card rounded-[2rem] p-6 transition-all duration-500 relative overflow-hidden">
+                        <div class="flex items-start gap-3 mb-5">
+                            <span class="bg-blue-600 text-white w-8 h-8 rounded-2xl flex-shrink-0 flex items-center justify-center text-sm font-black shadow-lg shadow-blue-200">${qIdx + 1}</span>
+                            <h3 class="font-bold text-slate-800 leading-snug text-[15px] pt-1">${q.q}</h3>
+                        </div>
+                        <div class="grid gap-2.5">
+                            ${q.options.map((opt, oIdx) => `
+                                <div class="relative">
+                                    <input type="checkbox" name="q${qIdx}" id="q${qIdx}o${oIdx}" value="${oIdx}" class="hidden checkbox-custom">
+                                    <label for="q${qIdx}o${oIdx}" class="block p-4 border-2 border-slate-100 rounded-2xl cursor-pointer font-semibold text-slate-600 text-sm transition-all active:scale-[0.97]">
+                                        ${opt}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div id="feedback-${qIdx}" class="mt-4 p-4 rounded-2xl hidden text-xs font-bold border-2 animate-pulse"></div>
+                    </div>
+                `).join('');
             }
 
-            loadQuestion() {
-                clearInterval(this.timer);
-                this.timeLeft = DEFAULT_TIME;
-                this.updateTimerUI();
-                
-                const q = questions[this.currentQuestion];
-                document.getElementById('question-counter').innerText = `Запитання ${this.currentQuestion + 1}/${questions.length}`;
-                document.getElementById('question-text').innerText = q.q;
-                
-                const container = document.getElementById('options-container');
-                container.innerHTML = '';
-                q.options.forEach((opt, i) => {
-                    container.innerHTML += `
-                        <div class="fade-in">
-                            <input type="checkbox" id="o${i}" class="hidden checkbox-custom" value="${i}">
-                            <label for="o${i}" class="block p-4 border-2 border-slate-200 rounded-2xl cursor-pointer active:bg-blue-50 transition-all font-semibold text-slate-700">
-                                ${opt}
-                            </label>
-                        </div>`;
+            submitAll() {
+                let correctCount = 0;
+                questions.forEach((q, qIdx) => {
+                    const selected = Array.from(document.querySelectorAll(`input[name="q${qIdx}"]:checked`)).map(i => parseInt(i.value));
+                    const isCorrect = selected.length === q.correct.length && selected.every(v => q.correct.includes(v));
+                    
+                    if (isCorrect) correctCount++;
+
+                    const container = document.getElementById(`q-container-${qIdx}`);
+                    const feedback = document.getElementById(`feedback-${qIdx}`);
+                    
+                    document.querySelectorAll(`input[name="q${qIdx}"]`).forEach(input => input.disabled = true);
+                    
+                    if (isCorrect) {
+                        container.style.borderColor = '#4ade80';
+                        container.style.background = 'rgba(240, 253, 244, 0.9)';
+                        feedback.classList.remove('hidden');
+                        feedback.classList.add('bg-green-100', 'text-green-700', 'border-green-200');
+                        feedback.innerHTML = "✅ ПРАВИЛЬНО";
+                    } else {
+                        container.style.borderColor = '#f87171';
+                        container.style.background = 'rgba(254, 242, 242, 0.9)';
+                        feedback.classList.remove('hidden');
+                        feedback.classList.add('bg-red-100', 'text-red-700', 'border-red-200');
+                        const correctTexts = q.correct.map(idx => q.options[idx]).join(' та ');
+                        feedback.innerHTML = `❌ ВІРНО: ${correctTexts}`;
+                    }
                 });
-                this.startTimer();
-            }
 
-            startTimer() {
-                this.timer = setInterval(() => {
-                    this.timeLeft--;
-                    this.updateTimerUI();
-                    if (this.timeLeft <= 0) this.submitAnswer();
-                }, 1000);
-            }
-
-            updateTimerUI() {
-                const bar = document.getElementById('timer-bar');
-                const text = document.getElementById('timer-text');
-                bar.style.width = `${(this.timeLeft / DEFAULT_TIME) * 100}%`;
-                text.innerText = `${this.timeLeft}s`;
-                bar.className = `h-full timer-bar ${this.timeLeft <= 4 ? 'bg-red-500' : 'bg-blue-500'}`;
-            }
-
-            submitAnswer() {
-                clearInterval(this.timer);
-                const sel = Array.from(document.querySelectorAll('input:checked')).map(i => parseInt(i.value));
-                const corr = questions[this.currentQuestion].correct;
-                if (sel.length === corr.length && sel.every(v => corr.includes(v))) this.score++;
-
-                this.currentQuestion++;
-                if (this.currentQuestion < questions.length) this.loadQuestion();
-                else this.showResults();
-            }
-
-            showResults() {
-                document.getElementById('quiz-screen').classList.add('hidden');
+                const grade = Math.round((correctCount / questions.length) * 12);
+                
+                document.getElementById('submit-container').classList.add('hidden');
                 document.getElementById('result-screen').classList.remove('hidden');
-                const grade = Math.round((this.score / questions.length) * 12);
                 document.getElementById('grade-display').innerText = grade;
-                document.getElementById('final-score-text').innerText = `Ти відповів правильно на ${this.score} з ${questions.length} запитань.`;
+                document.getElementById('final-score-text').innerText = `Вірно: ${correctCount} з ${questions.length}`;
                 
-                localStorage.setItem(TEST_ID, JSON.stringify({
-                    name: this.studentName,
-                    score: this.score,
-                    grade: grade,
-                    date: new Date().toLocaleDateString('uk-UA'),
-                    id: Math.random().toString(36).substr(2, 6).toUpperCase()
-                }));
-            }
-
-            copyResultToClipboard() {
-                const saved = localStorage.getItem(TEST_ID);
-                if (!saved) return;
-                const data = JSON.parse(saved);
-                const text = `РЕЗУЛЬТАТ ТЕСТУ: Гідростатичний тиск\nУчень: ${data.name}\nОцінка: ${data.grade}/12\nДата: ${data.date}\nКод підтвердження: ${data.id}`;
-                
-                const textArea = document.createElement("textarea");
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-
-                // Show instruction and message
-                document.getElementById('instruction-box').classList.remove('hidden');
-                const msg = document.getElementById('copy-msg');
-                if(msg) {
-                    msg.style.opacity = '1';
-                } else {
-                    alert("Результат скопійовано! Тепер встав його в чат з вчителем.");
-                }
-            }
-
-            async generateCertificate() {
-                this._generatePDF(this.score, this.studentName);
-            }
-
-            async generateCertificateFromStorage() {
-                const data = JSON.parse(localStorage.getItem(TEST_ID));
-                this._generatePDF(data.score, data.name);
-            }
-
-            async _generatePDF(score, name) {
-                const grade = Math.round((score / questions.length) * 12);
-                const saved = JSON.parse(localStorage.getItem(TEST_ID)) || {};
-                
-                document.getElementById('cert-name').innerText = name;
-                document.getElementById('cert-grade').innerText = grade;
-                document.getElementById('cert-date').innerText = `Дата: ${new Date().toLocaleDateString('uk-UA')}`;
-                document.getElementById('cert-id').innerText = `ID: ${saved.id || '---'}`;
-
-                try {
-                    const canvas = await html2canvas(document.getElementById('certificate-template'), { scale: 2 });
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF('l', 'mm', 'a5');
-                    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
-                    pdf.save(`Sertyfikat_${name.replace(/\s/g, '_')}.pdf`);
-                } catch (e) { alert("Помилка PDF."); }
+                document.getElementById('result-screen').scrollIntoView({ behavior: 'smooth' });
             }
         }
-        const quiz = new Quiz();
+
+        window.onload = () => {
+            window.quiz = new Quiz();
+        };
     </script>
 </body>
 </html>
